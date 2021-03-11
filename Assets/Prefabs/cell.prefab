@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cellColor: {r: 0.1745283, g: 0.49812675, b: 1, a: 1}
   gfx: {fileID: 6497606166692872799}
+  hasBomb: 0
 --- !u!1 &6497606166692872799
 GameObject:
   m_ObjectHideFlags: 0

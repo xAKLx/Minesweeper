@@ -13,14 +13,15 @@ public class BoardController : MonoBehaviour
   public int rows = 4;
   public GameObject cell;
 
-  protected void PopulateBoard(Action<GameObject> onCellCreation)
+  protected void PopulateBoard(Action<GameObject, int, int> onCellCreation)
   {
     if (EditorApplication.isPlayingOrWillChangePlaymode) return;
     foreach (Transform child in this.transform)
     {
       UnityEditor.EditorApplication.delayCall += () =>
       {
-        DestroyImmediate(child.gameObject);
+        if (child != null)
+          DestroyImmediate(child.gameObject);
       };
     }
 
@@ -32,7 +33,7 @@ public class BoardController : MonoBehaviour
         {
           var cellInstance = Instantiate(cell, new Vector3(columnIndex - (columns / 2.0f) + 0.5f, rowIndex - (rows / 2.0f) + 0.5f, 0.0f), Quaternion.identity);
           cellInstance.transform.parent = this.transform;
-          onCellCreation(cellInstance);
+          onCellCreation(cellInstance, columnIndex, rowIndex);
         };
       }
     }

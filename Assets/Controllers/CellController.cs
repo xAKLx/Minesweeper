@@ -6,6 +6,7 @@ public class CellController : MonoBehaviour
 {
   public Color cellColor;
   public GameObject gfx;
+  public bool hasBomb;
 
   private void OnValidate()
   {
@@ -16,5 +17,12 @@ public class CellController : MonoBehaviour
   {
     cellColor = newColor;
     gfx.GetComponent<SpriteRenderer>().color = cellColor;
+  }
+
+  private void OnDrawGizmos()
+  {
+    if (!hasBomb) return;
+    Gizmos.color = Color.black;
+    Gizmos.DrawSphere(transform.position, 0.3f);
   }
 }
