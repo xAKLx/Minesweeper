@@ -13,14 +13,14 @@ public class BoardController : MonoBehaviour
   public int rows = 4;
   public GameObject cell;
 
-  protected void PopulateBoard(Action<GameObject, int, int> onCellCreation)
+  protected void PopulateBoard(Action<GameObject, Vector2Int> onCellCreation)
   {
     if (EditorApplication.isPlayingOrWillChangePlaymode) return;
     AdjustCellQuantity();
     PopulateCellData(onCellCreation);
   }
 
-  private void PopulateCellData(Action<GameObject, int, int> onCellCreation)
+  private void PopulateCellData(Action<GameObject, Vector2Int> onCellCreation)
   {
     foreach (var rowIndex in Enumerable.Range(0, rows))
     {
@@ -30,7 +30,7 @@ public class BoardController : MonoBehaviour
         {
           var cellInstance = transform.GetChild((rowIndex * columns) + columnIndex).gameObject;
           cellInstance.transform.position = new Vector3(columnIndex - (columns / 2.0f) + 0.5f, rowIndex - (rows / 2.0f) + 0.5f, 0.0f);
-          onCellCreation(cellInstance, columnIndex, rowIndex);
+          onCellCreation(cellInstance, new Vector2Int(columnIndex, rowIndex));
         };
       }
     }

@@ -11,12 +11,40 @@ public class MineSweeperBoard : BoardController
   private void OnValidate()
   {
     bombs = GenerateBombs();
-    PopulateBoard((cellInstance, x, y) =>
+    PopulateBoard((cellInstance, position) =>
     {
       cellInstance.GetComponent<CellController>().UpdateCellColor(cellColor);
-      cellInstance.GetComponent<CellController>().hasBomb = bombs[x, y];
+      cellInstance.GetComponent<CellController>().hasBomb = bombs[position.x, position.y];
+      cellInstance.GetComponent<CellController>().UpdateAdjacentBombAmount(CalculateAdjacentBombs(position));
+
     });
 
+  }
+
+  private int CalculateAdjacentBombs(Vector2Int position)
+  {
+    var bombs = new bool[] {
+      getBombOrFalse(position + Vector2Int.up),
+      getBombOrFalse(position + Vector2Int.up + Vector2Int.right),
+      getBombOrFalse(position + Vector2Int.right),
+      getBombOrFalse(position + Vector2Int.right + Vector2Int.down),
+      getBombOrFalse(position + Vector2Int.down),
+      getBombOrFalse(position + Vector2Int.down + Vector2Int.left),
+      getBombOrFalse(position + Vector2Int.left),
+      getBombOrFalse(position + Vector2Int.left + Vector2Int.up),
+    };
+
+    return bombs.Where(x => x).Count();
+  }
+
+  private bool getBombOrFalse(Vector2Int position)
+  {
+    return !isOutOfBounds(position) && bombs[position.x, position.y];
+  }
+
+  private bool isOutOfBounds(Vector2Int position)
+  {
+    return position.x < 0 || position.x >= columns || position.y < 0 || position.y >= rows;
   }
 
   private bool[,] GenerateBombs()
