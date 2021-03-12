@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -16,6 +17,7 @@ public class CellController : MonoBehaviour
   public GameObject gfx_opened;
   public bool hasBomb;
   public int amountOfAdjacentBombs = 5;
+  public Action openAdjacent;
   private CellState _state = CellState.Closed;
 
   public CellState state
@@ -28,9 +30,14 @@ public class CellController : MonoBehaviour
     }
   }
 
-  private void OnMouseUpAsButton()
+  private void OnMouseUpAsButton() => Open();
+
+  public void Open()
   {
+    if (state != CellState.Closed) return;
     state = CellState.Opened;
+
+    if (amountOfAdjacentBombs == 0) openAdjacent();
   }
 
   private void OnValidate()
