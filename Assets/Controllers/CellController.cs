@@ -20,8 +20,12 @@ public class CellController : MonoBehaviour
   public bool hasBomb;
   public int amountOfAdjacentBombs = 5;
   public Action openAdjacent;
+  public Func<bool> areAllAdjacentBombsFlagged;
   public MineSweeperBoard board;
   private CellState _state = CellState.Closed;
+  float clicked = 0;
+  float clicktime = 0;
+  float clickdelay = 0.5f;
 
   public CellState state
   {
@@ -35,6 +39,23 @@ public class CellController : MonoBehaviour
     }
   }
 
+  bool DoubleClick()
+  {
+    if (Input.GetMouseButtonDown(0))
+    {
+      clicked++;
+      if (clicked == 1) clicktime = Time.time;
+    }
+    if (clicked > 1 && Time.time - clicktime < clickdelay)
+    {
+      clicked = 0;
+      clicktime = 0;
+      return true;
+    }
+    else if (clicked > 2 || Time.time - clicktime > 1) clicked = 0;
+    return false;
+  }
+
   private void OnMouseUpAsButton()
   {
     if (board.gameState != GameState.Playing) return;
@@ -45,6 +66,11 @@ public class CellController : MonoBehaviour
   {
     if (board.gameState != GameState.Playing) return;
     if (Input.GetMouseButtonDown(1)) ToggleFlag();
+
+    if (state == CellState.Opened && DoubleClick() && areAllAdjacentBombsFlagged())
+    {
+      openAdjacent();
+    }
   }
 
   private void ToggleFlag()
