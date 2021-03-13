@@ -7,7 +7,8 @@ using UnityEngine;
 public enum CellState
 {
   Closed = 0,
-  Opened = 1
+  Opened = 1,
+  Flagged = 2
 }
 
 public class CellController : MonoBehaviour
@@ -31,6 +32,20 @@ public class CellController : MonoBehaviour
   }
 
   private void OnMouseUpAsButton() => Open();
+
+  void OnMouseOver()
+  {
+    if (Input.GetMouseButtonDown(1)) ToggleFlag();
+  }
+
+  private void ToggleFlag()
+  {
+    state = state == CellState.Flagged
+      ? CellState.Closed
+      : state == CellState.Closed
+        ? CellState.Flagged
+        : state;
+  }
 
   public void Open()
   {
