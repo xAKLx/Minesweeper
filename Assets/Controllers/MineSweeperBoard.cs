@@ -12,12 +12,16 @@ public class MineSweeperBoard : BoardController
 
   private void Start()
   {
+    bombs = GenerateBombs();
     Enumerable.Range(0, columns)
     .ToList().ForEach(columnIndex => Enumerable.Range(0, rows).ToList().ForEach(rowIndex =>
     {
       cells[columnIndex, rowIndex] = transform.GetChild((rowIndex * columns) + columnIndex).gameObject;
       var cellInstance = cells[columnIndex, rowIndex];
       cellInstance.GetComponent<CellController>().openAdjacent = OpenAdjacentFactory(new Vector2Int(columnIndex, rowIndex));
+      cellInstance.GetComponent<CellController>().board = this;
+      cellInstance.GetComponent<CellController>().hasBomb = bombs[columnIndex, rowIndex];
+      cellInstance.GetComponent<CellController>().UpdateAdjacentBombAmount(CalculateAdjacentBombs(new Vector2Int(columnIndex, rowIndex)));
     }));
   }
 
@@ -84,9 +88,10 @@ public class MineSweeperBoard : BoardController
 
     var coordinates = GetPossibleCoordinates().ToList();
     var rand = new System.Random();
-    while (amountOfBombs-- > 0)
+    while (amountOfBombs > 0)
     {
       var coordinate = coordinates.ElementAt(rand.Next(coordinates.Count()));
+      amountOfBombs -= bombs[coordinate.x, coordinate.y] ? 0 : 1;
       bombs[coordinate.x, coordinate.y] = true;
     }
 

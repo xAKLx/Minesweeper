@@ -8,7 +8,8 @@ public enum CellState
 {
   Closed = 0,
   Opened = 1,
-  Flagged = 2
+  Flagged = 2,
+  Bomb = 3
 }
 
 public class CellController : MonoBehaviour
@@ -19,6 +20,7 @@ public class CellController : MonoBehaviour
   public bool hasBomb;
   public int amountOfAdjacentBombs = 5;
   public Action openAdjacent;
+  public MineSweeperBoard board;
   private CellState _state = CellState.Closed;
 
   public CellState state
@@ -28,13 +30,20 @@ public class CellController : MonoBehaviour
     {
       _state = value;
       GetComponent<Animator>().SetInteger("state", (int)_state);
+
+      if (value == CellState.Bomb) board.gameState = GameState.Gameover;
     }
   }
 
-  private void OnMouseUpAsButton() => Open();
+  private void OnMouseUpAsButton()
+  {
+    if (board.gameState != GameState.Playing) return;
+    Open();
+  }
 
   void OnMouseOver()
   {
+    if (board.gameState != GameState.Playing) return;
     if (Input.GetMouseButtonDown(1)) ToggleFlag();
   }
 
@@ -50,9 +59,9 @@ public class CellController : MonoBehaviour
   public void Open()
   {
     if (state != CellState.Closed) return;
-    state = CellState.Opened;
+    state = hasBomb ? CellState.Bomb : CellState.Opened;
 
-    if (amountOfAdjacentBombs == 0) openAdjacent();
+    if (!hasBomb && amountOfAdjacentBombs == 0) openAdjacent();
   }
 
   private void OnValidate()
