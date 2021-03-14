@@ -89,6 +89,8 @@ public class CellController : MonoBehaviour
     if (state != CellState.Closed) return;
     state = hasBomb ? CellState.Bomb : CellState.Opened;
 
+    board.CheckWinningCondition();
+
     if (!hasBomb && amountOfAdjacentBombs == 0) openAdjacent();
   }
 

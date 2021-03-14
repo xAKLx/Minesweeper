@@ -5,12 +5,6 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public enum GameState
-{
-  Playing,
-  Gameover
-}
-
 public class BoardController : MonoBehaviour
 {
   [Min(1)]
@@ -18,20 +12,6 @@ public class BoardController : MonoBehaviour
   [Min(1)]
   public int rows = 4;
   public GameObject cell;
-  public GameObject gameOverScreen;
-  public GameState _gameState = GameState.Playing;
-  public GameState gameState
-  {
-    get => _gameState;
-    set
-    {
-      _gameState = value;
-      if (value == GameState.Gameover)
-      {
-        gameOverScreen.SetActive(true);
-      }
-    }
-  }
 
   protected void PopulateBoard(Action<GameObject, Vector2Int> onCellCreation)
   {

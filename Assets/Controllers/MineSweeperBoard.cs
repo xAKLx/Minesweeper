@@ -5,13 +5,39 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
+public enum GameState
+{
+  Playing,
+  Gameover,
+  Win
+}
+
 public class MineSweeperBoard : BoardController
 {
   public Color cellColor;
   public bool[,] bombs;
   public GameObject[,] cells;
   public GameObject remaningBombsDisplay;
+  public GameObject gameOverScreen;
+  public GameObject winScreen;
   public int amountOfBombs = 10;
+  public GameState _gameState = GameState.Playing;
+  public GameState gameState
+  {
+    get => _gameState;
+    set
+    {
+      _gameState = value;
+      if (value == GameState.Gameover)
+      {
+        gameOverScreen.SetActive(true);
+      }
+      else if (value == GameState.Win)
+      {
+        winScreen.SetActive(true);
+      }
+    }
+  }
 
   private void Start()
   {
@@ -43,6 +69,23 @@ public class MineSweeperBoard : BoardController
     };
   }
 
+  public void CheckWinningCondition()
+  {
+    var unopenedCellsWithoutBombs = GetCellsControllersWithoutBombs().Where(x => x.state != CellState.Opened);
+
+    if (unopenedCellsWithoutBombs.Count() == 0)
+    {
+      gameState = GameState.Win;
+    }
+  }
+
+  public IEnumerable<CellController> GetCellsControllersWithoutBombs()
+  {
+    return GetAllCells()
+      .Select(x => x.GetComponent<CellController>())
+      .Where(x => !x.hasBomb);
+  }
+
   public void UpdateRemainingBombAmount()
   {
     var remainingBombAmount = CalculateRemainingBombAmount();
@@ -56,12 +99,17 @@ public class MineSweeperBoard : BoardController
 
   public int GetAmountOfFlaggedCells()
   {
-    return Enumerable.Range(0, columns)
-      .ToList().Select(columnIndex => Enumerable.Range(0, rows).ToList().Select(rowIndex => cells[columnIndex, rowIndex]))
-      .SelectMany(x => x)
+    return GetAllCells()
       .Select(x => x.GetComponent<CellController>())
       .Where(x => x.state == CellState.Flagged)
       .Count();
+  }
+
+  private IEnumerable<GameObject> GetAllCells()
+  {
+    return Enumerable.Range(0, columns)
+      .ToList().Select(columnIndex => Enumerable.Range(0, rows).ToList().Select(rowIndex => cells[columnIndex, rowIndex]))
+      .SelectMany(x => x);
   }
 
   private void OnValidate()
