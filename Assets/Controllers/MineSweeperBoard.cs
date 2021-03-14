@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,6 +10,8 @@ public class MineSweeperBoard : BoardController
   public Color cellColor;
   public bool[,] bombs;
   public GameObject[,] cells;
+  public GameObject remaningBombsDisplay;
+  public int amountOfBombs = 10;
 
   private void Start()
   {
@@ -38,6 +41,27 @@ public class MineSweeperBoard : BoardController
         .Select(coordinate => cells[coordinate.x, coordinate.y]);
       return cellController.amountOfAdjacentBombs == adjacentCells.Where(x => x.GetComponent<CellController>().state == CellState.Flagged).Count();
     };
+  }
+
+  public void UpdateRemainingBombAmount()
+  {
+    var remainingBombAmount = CalculateRemainingBombAmount();
+    remaningBombsDisplay.GetComponentInChildren<TextMeshPro>().text = remainingBombAmount.ToString();
+  }
+
+  public int CalculateRemainingBombAmount()
+  {
+    return amountOfBombs - GetAmountOfFlaggedCells();
+  }
+
+  public int GetAmountOfFlaggedCells()
+  {
+    return Enumerable.Range(0, columns)
+      .ToList().Select(columnIndex => Enumerable.Range(0, rows).ToList().Select(rowIndex => cells[columnIndex, rowIndex]))
+      .SelectMany(x => x)
+      .Select(x => x.GetComponent<CellController>())
+      .Where(x => x.state == CellState.Flagged)
+      .Count();
   }
 
   private void OnValidate()
@@ -99,7 +123,7 @@ public class MineSweeperBoard : BoardController
 
   private bool[,] GenerateBombs()
   {
-    var amountOfBombs = 10;
+    var amountOfBombs = this.amountOfBombs;
     var bombs = new bool[columns, rows];
 
     var coordinates = GetPossibleCoordinates().ToList();

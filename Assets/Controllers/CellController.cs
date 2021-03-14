@@ -80,6 +80,8 @@ public class CellController : MonoBehaviour
       : state == CellState.Closed
         ? CellState.Flagged
         : state;
+
+    board.UpdateRemainingBombAmount();
   }
 
   public void Open()
